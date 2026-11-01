@@ -1,60 +1,96 @@
 <div align="center">
   <img src="splash_image.svg" alt="Sony SmartWatch 2" width="600"/>
+
+  # Sony SmartWatch 2 (SW2) Modern Android Companion App
+  
+  **Dust off your Sony SmartWatch 2 and use it on Android 14+!**
+
+  [![Android](https://img.shields.io/badge/Android-14%2B%20Ready-3DDC84?logo=android&logoColor=white)](#)
+  [![Bluetooth](https://img.shields.io/badge/Bluetooth-RFCOMM%20%2F%20SPP-0082FC?logo=bluetooth&logoColor=white)](#)
+  [![Reverse Engineering](https://img.shields.io/badge/Protocol-Reverse%20Engineered-blueviolet)](#-protocol-layout--reverse-engineering-findings)
+  [![Python Lab](https://img.shields.io/badge/Python-Protocol%20Lab-3776AB?logo=python&logoColor=white)](#-developer--protocol-lab-python--windows-11)
+
 </div>
-
-# Sony SmartWatch 2 (SW2) Reverse Engineering & Protocol Lab (Windows 11)
-
-This repository (`SWRE`) provides a standalone environment for direct Bluetooth communication, packet capture, analysis, and reverse engineering of the Sony Costanza protocol on Windows 11 — **completely bypassing Android build chains and bridges**.
 
 ---
 
-## 🚀 Quick Start on Windows 11
+## 💡 Why This Project Exists
 
-### 1. Pair SmartWatch 2
-1. Power on or reset the SmartWatch 2 (long press power button) until the pairing screen ("Waiting for phone / Smart Connect") is displayed.
-2. In Windows 11, open: **Settings -> Bluetooth & devices -> Add device -> Bluetooth**.
-3. Select SmartWatch 2 and pair (PIN is typically `0000` or confirmed automatically).
+The **Sony SmartWatch 2 (SW2)** remains an outstanding piece of wearable hardware: a premium aluminium body, water resistance, multi-day battery life, and a transflective display that becomes *more* readable under direct sunlight.
 
-### 2. Choose Connection Mode
+Unfortunately, Sony abandoned the software ecosystem years ago:
+- The official **Sony Smart Connect** and **LiveWare Manager** apps crash on modern Android releases.
+- Legacy background services and 32-bit binaries fail to run on Android 10, 11, 12, 13, and 14+.
+- Modern OS battery optimization, `NotificationListenerService` restrictions, and Bluetooth permission overhauls completely broke the original pairing and notification flow.
 
-Windows 11 supports three distinct modes to communicate with the watch:
+**This project revives the Sony SmartWatch 2 for the modern era.** It provides a clean, native, standalone Android Companion App built on top of a fully reverse-engineered Bluetooth RFCOMM/SPP Costanza protocol stack — allowing you to take your SW2 out of the drawer and wear it every day with your current smartphone.
+
+---
+
+## ✨ Features & Architecture
+
+- 🚀 **Zero Sony Dependencies**: Operates completely standalone — no obsolete Sony Smart Connect, LiveWare Manager, or deprecated Play Store plugins needed.
+- 🔔 **Instant Pop-up Notifications**: Real-time pop-up notification banners with vibration alerts for incoming messages, emails, chats, and calls.
+- 📜 **On-Watch Notification Drawer & History**: Full bidirectional synchronization with the watch's internal notification storage (`ResourceNotification`). Browse past notifications directly from the watch UI with proper subscreen rendering.
+- 📱 **Built for Android 14+**: Implements modern Android architecture including Foreground Services, correct `BLUETOOTH_CONNECT` / `BLUETOOTH_SCAN` runtime permissions, battery optimization exemptions, and modern `NotificationListenerService`.
+- 🕒 **Automatic Clock & Locale Sync**: Synchronizes the watch's internal RTC, 12/24-hour display format, date format, and language strings on connection.
+- 📳 **Haptic Feedback**: Programmable vibration patterns for alerts and incoming events.
+- 🔬 **Built-in Windows 11 / Python Protocol Lab**: A standalone Python controller (`sw2_controller.py`) for rapid reverse engineering, protocol verification, packet inspection, and packet replay from your PC.
+
+---
+
+## 📲 Getting Started (Android Companion App)
+
+### 1. Prepare your SmartWatch 2
+1. If previously paired, perform a factory reset: hold down the power button until the watch restarts and displays the pairing prompt ("Waiting for phone / Smart Connect").
+2. Ensure Bluetooth is enabled on the watch.
+
+### 2. Pair with your Smartphone
+1. Open your Android phone's **Settings -> Connected devices -> Pair new device**.
+2. Select **SmartWatch 2** from the list.
+3. Confirm the pairing code on both the phone and watch (PIN is `0000` or confirmed automatically).
+
+### 3. Install & Configure the Companion App
+1. Install the Companion APK on your phone.
+2. Launch the app and grant the required modern Android permissions:
+   - **Notification Access**: Enables the app to forward notifications to your watch.
+   - **Nearby Devices / Bluetooth**: Required on Android 12+ for RFCOMM socket communication.
+   - **Battery Optimization Exemption**: Ensures reliable background connectivity without the OS terminating the service.
+3. The Companion App will automatically connect to the watch's RFCOMM SDP service (`8E780522-3C51-11E1-8D8D-001CC4D601D8`), complete the Sony handshake, and start synchronizing notifications.
+
+---
+
+## 🧪 Developer & Protocol Lab (Python / Windows 11)
+
+For developers and protocol hackers, this repository includes a complete Python-based reverse engineering suite (`sw2_controller.py`). It connects directly from a Windows 11 notebook to the watch via Bluetooth — **no Android build environment required**.
+
+### Running the Python Controller
+
+Windows 11 supports three connection options:
 
 #### Option 1: Native Windows 11 RFCOMM Server (Zero-Config, Recommended) ⭐
-The Sony SmartWatch 2 functions as a Bluetooth client and actively searches for the Sony Costanza SDP Service UUID (`8E780522-3C51-11E1-8D8D-001CC4D601D8`). The controller spins up this service advertisement directly via native Windows 11 WinRT APIs:
+The watch acts as a Bluetooth client and actively seeks the Sony Costanza SDP service (`8E780522-3C51-11E1-8D8D-001CC4D601D8`). The controller advertises this service natively using Windows 11 WinRT APIs:
 ```cmd
 python sw2_controller.py
 ```
-*No manual COM port or MAC address configuration required. As soon as the watch is within range, it connects automatically in 1–2 seconds.*
+*No manual COM port or MAC address needed. As soon as the watch is in range, it connects automatically in 1–2 seconds.*
 
-#### Option 2: Virtual COM Port (Classic)
-Connect via a paired Bluetooth Serial Port (COM) configured in Windows:
+#### Option 2: Virtual Bluetooth COM Port (Classic)
+Connect via an incoming/outgoing serial COM port configured in Windows Bluetooth settings:
 ```cmd
 python sw2_controller.py --com COM3
 ```
 
-#### Option 3: Native Windows Bluetooth RFCOMM Client Socket
-Connect directly to the device's Bluetooth MAC address:
+#### Option 3: RFCOMM Client Socket (Direct MAC Address)
+Connect directly to the watch's MAC address:
 ```cmd
 python sw2_controller.py --mac B4:52:7D:F3:E8:81 --channel 1
 ```
 
----
+### Interactive Console Menu
 
-## 📦 Setup & Dependencies
+Once connected, `sw2_controller.py` executes the full Sony handshake sequence and presents an interactive test shell:
 
-The scripts run on standard Python 3. For serial COM support and optional bitmap processing:
-```cmd
-pip install -r requirements.txt
-```
-*(Note: Both `sw2_controller.py` and `telegram_helper.py` include pure-Python fallbacks and run out-of-the-box without third-party dependencies).*
-
----
-
-## 🎮 Interactive Console (`sw2_controller.py`)
-
-Upon connection, the controller automatically completes the full Sony initialization sequence (version query, FOTA reset, real-time clock sync, locale sync, and extension registration).
-
-An interactive terminal menu is then presented:
 ```text
 ======================================================
   Sony SmartWatch 2 Reverse Engineering Controller
@@ -72,9 +108,11 @@ All incoming watch packets (ACKs, NACKs, touch events, swipe gestures, hardware 
 
 ---
 
-## 🔬 Protocol Layout & Byte-Offset Reference (Step 24)
+## 🔬 Protocol Layout & Reverse Engineering Findings
 
-Notifications (`ResourceNotification`) follow the exact **322-byte binary layout** reconstructed from `libprotocol.so`:
+### 1. Notification Binary Layout (Step 24 / 322 Bytes)
+
+Notifications (`ResourceNotification`) follow the exact **322-byte memory layout** reconstructed from `libprotocol.so`:
 
 ```text
 Offset       Length   Description
@@ -104,8 +142,10 @@ Offset       Length   Description
 Total Size:           322 Bytes (when subScreenCount = 1)
 ```
 
-### ResourceExtension Layout (60 Bytes)
-To register an application or notification extension, the SmartWatch 2 firmware expects this precise 60-byte payload:
+### 2. ResourceExtension Layout (60 Bytes)
+
+For the firmware to display notifications under an application drawer, an extension must be registered using this precise 60-byte payload:
+
 ```text
 Offset       Length   Description
 -----------------------------------------------------------------------------------
@@ -132,37 +172,48 @@ Offset       Length   Description
 Total Size:           60 Bytes
 ```
 
-### Image & Icon Compression (Raw DEFLATE)
+### 3. Image & Icon Compression (Raw DEFLATE)
+
 > [!IMPORTANT]
-> The SmartWatch 2 firmware requires compressed images (`subType = 5`, `compressionType = 4`) in **pure Raw-DEFLATE** (RFC 1951) **without** zlib headers or Adler32 checksum footers (`wbits=-15`).
-> Standard Python `zlib.compress()` prepends the RFC 1950 header (`0x78 0x9C`), which causes the watch to immediately return a **NACK**. Always compress using:
+> The SmartWatch 2 firmware requires compressed images (`subType = 5`, `compressionType = 4`) formatted in **pure Raw-DEFLATE** (RFC 1951) **without** zlib wrappers or Adler32 footers (`wbits=-15`).
+> Standard Python `zlib.compress()` prepends the RFC 1950 header (`0x78 0x9C`), which causes the watch to reject the frame with a **NACK**. Always compress using:
 > ```python
 > compressor = zlib.compressobj(wbits=-15)
 > deflated = compressor.compress(raw_rgb565) + compressor.flush()
 > ```
 
-### Packet Fragmentation
-Packets exceeding 512 bytes (such as full-screen bitmaps) are automatically fragmented by `CostanzaCodec.fragment_packet()` into **Type 11 (TYPE_FRAGMENT)** frames with a maximum payload of 492 bytes each.
+### 4. Large Packets & Fragmentation
+
+Packets exceeding 512 bytes (such as full-screen bitmaps or large font packages) are automatically partitioned by the codec into **Type 11 (TYPE_FRAGMENT)** frames with a maximum payload of 492 bytes each.
 
 ---
 
-## 📂 Reference Implementations (`reference/`)
+## 📂 Repository Contents
 
-The `reference/` directory contains disassembled and decompiled reference files for protocol verification:
-- `GeneralSyncManager.java`: Sony's original database and notification synchronization logic
-- `CommunicationManager.java`: Original connection management, RFCOMM socket lifecycle, and handshake flow
-- `ResourceNotification.java`, `ResourceExtension.java`, `ResourceString.java`, `ResourceScreen.java`
-- `RequestNotification.java`, `RequestExtension.java`, `Types.java`, `costanza.xml`
-- `libprotocol.so`: Original ARM shared library extracted from the SmartWatch 2 firmware
-- `CostanzaPacketCodec.kt`, `CostanzaBluetoothManager.kt`, `CostanzaConstants.kt`: Kotlin sources from the Android companion service
+| Path | Purpose |
+|---|---|
+| `sw2_controller.py` | Complete Python SW2 controller (RFCOMM server, COM, WinRT, packet decoder, menu) |
+| `test_notification.py` | Standalone script for sending test notification packets |
+| `test_icon.py` | Icon generator (RGB565 raw DEFLATE) for app extensions |
+| `telegram_helper.py` | Remote helper to forward logs and test alerts to Telegram |
+| `splash_image.svg` | Vector illustration and banner for the project |
+| `TELEGRAM_BOT.md` | Documentation for Telegram Bot remote control and log capture |
+| `requirements.txt` | Python dependencies (optional; pure-Python fallbacks included) |
+| `reference/` | Disassembled Sony companion APK sources, decompiled Java/Kotlin & `libprotocol.so` |
 
 ---
 
-## 🤖 Telegram Bot Helper (`telegram_helper.py`)
+## 🤖 Remote Logging & Bot Helper
 
-For remote notification forwarding, automated test alerts, or dispatching log captures directly to a mobile device:
-- Refer to [TELEGRAM_BOT.md](TELEGRAM_BOT.md)
-- Quick command example:
+For automated testing and remote log capturing directly to your smartphone:
+- See [TELEGRAM_BOT.md](TELEGRAM_BOT.md)
+- Send a test message:
   ```cmd
-  python telegram_helper.py --text "Notification test successful!"
+  python telegram_helper.py --text "SW2 notification test successful!"
   ```
+
+---
+
+## 📜 License
+
+Reverse-engineered and developed for the open-source community to preserve and modernize functional hardware. Provided under the MIT License.
