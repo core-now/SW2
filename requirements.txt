@@ -1,0 +1,5 @@
+pyserial>=3.5
+pillow>=9.0.0
+winrt-Windows.Devices.Bluetooth.Rfcomm
+winrt-Windows.Networking.Sockets
+winrt-Windows.Networking

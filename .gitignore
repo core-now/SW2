@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packages and archives
+*.apk
+*.zip
+*.tar.gz
+*.7z
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# OS / Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment / Secrets
+.env
+*.local
