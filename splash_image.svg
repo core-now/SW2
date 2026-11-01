@@ -35,7 +35,7 @@
 <defs>
   <clipPath id="screen"><rect x="206" y="248" width="268" height="326" rx="16"/></clipPath>
 </defs>
-<rect x="0" y="0" width="680" height="860" rx="12" fill="#e9eaed"/>
+
 
 <path class="arc a1" d="M168,340 Q150,411 168,482"/>
 <path class="arc a2" d="M146,360 Q132,411 146,462"/>

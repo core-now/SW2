@@ -1,21 +1,21 @@
 # Telegram Bot Integration & Remote Control
 
-Dieses Dokument beschreibt die direkte Anbindung an einen Telegram Bot für Remote-Logging, Benachrichtigungstests und den Austausch von Logs/APKs unter Windows 11 / Linux.
+This document describes direct integration with a Telegram Bot for remote logging, notification testing, and exchanging logs or binaries on Windows 11 / Linux.
 
 ---
 
-## 1. Bot-Konfiguration
+## 1. Bot Configuration
 
-Aus Sicherheitsgründen dürfen Tokens und Chat-IDs niemals fest im Code oder in Dokumentationen hinterlegt werden.
+For security reasons, never hardcode bot tokens or chat IDs into code or documentation.
 
-Kopiere die Datei `.env.example` nach `.env` und trage dort deine Zugangsdaten ein:
+Copy `.env.example` to `.env` and fill in your credentials:
 
 ```env
 TELEGRAM_BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN_HERE
 TELEGRAM_CHAT_ID=YOUR_CHAT_ID_HERE
 ```
 
-Alternativ können diese als Umgebungsvariablen in der Shell gesetzt werden:
+Alternatively, set them as environment variables in your shell:
 ```powershell
 $env:TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN_HERE"
 $env:TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE"
@@ -23,15 +23,15 @@ $env:TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE"
 
 ---
 
-## 2. Verwendung unter Windows 11
+## 2. Usage on Windows 11
 
-### A) PowerShell (Bordmittel ohne Installation)
+### A) PowerShell (Built-in, No Dependencies)
 
-#### Textnachricht senden:
+#### Send a Text Message:
 ```powershell
 $token = $env:TELEGRAM_BOT_TOKEN
 $chatId = $env:TELEGRAM_CHAT_ID
-$text = "SW2 Test vom Windows 11 Notebook!"
+$text = "SW2 Test from Windows 11 Notebook!"
 
 $body = @{
     chat_id = $chatId
@@ -41,7 +41,7 @@ $body = @{
 Invoke-RestMethod -Uri "https://api.telegram.org/bot$token/sendMessage" -Method Post -Body $body -ContentType "application/json; charset=utf-8"
 ```
 
-#### Datei / Logfile / APK senden:
+#### Send a File / Logfile / Binary:
 ```powershell
 $token = $env:TELEGRAM_BOT_TOKEN
 $chatId = $env:TELEGRAM_CHAT_ID
@@ -49,7 +49,7 @@ $filePath = ".\sw2_capture.log"
 
 $form = @{
     chat_id  = $chatId
-    caption  = "SW2 Debug Log vom Laptop"
+    caption  = "SW2 Debug Log from Laptop"
     document = Get-Item $filePath
 }
 
@@ -58,52 +58,52 @@ Invoke-RestMethod -Uri "https://api.telegram.org/bot$token/sendDocument" -Method
 
 ---
 
-### B) curl (CMD, PowerShell oder Git Bash)
+### B) curl (CMD, PowerShell, or Git Bash)
 
-#### Textnachricht senden:
+#### Send a Text Message:
 ```bash
 curl -s -X POST https://api.telegram.org/botYOUR_TELEGRAM_BOT_TOKEN_HERE/sendMessage ^
      -d chat_id=YOUR_CHAT_ID_HERE ^
-     -d text="SW2 Controller gestartet"
+     -d text="SW2 Controller started"
 ```
 
-#### Datei senden (Multipart Form-Data):
+#### Send a File (Multipart Form-Data):
 ```bash
 curl -s -F chat_id=YOUR_CHAT_ID_HERE ^
         -F document=@sw2_controller.py ^
-        -F caption="Aktuelles SW2 Controller Skript" ^
+        -F caption="Current SW2 Controller Script" ^
         https://api.telegram.org/botYOUR_TELEGRAM_BOT_TOKEN_HERE/sendDocument
 ```
 
 ---
 
-### C) Python (Standalone & ohne externe Bibliotheken)
+### C) Python (Standalone & No External Libraries)
 
-Das Skript `telegram_helper.py` liegt direkt im selben Ordner und lädt die Konfiguration automatisch aus der `.env`-Datei oder aus den Umgebungsvariablen.
+The `telegram_helper.py` script resides directly in the repository and automatically loads configuration from either a `.env` file or environment variables.
 
-#### In eigenen Python-Skripten importieren:
+#### Import in Python Scripts:
 ```python
 from telegram_helper import send_text, send_document, get_updates
 
-# 1. Textnachricht senden
-send_text("Watch Handshake erfolgreich abgeschlossen!")
+# 1. Send text message
+send_text("Watch handshake completed successfully!")
 
-# 2. Datei senden
+# 2. Send file
 send_document("capture.bin", caption="Binary Protocol Capture")
 
-# 3. Eingehende Telegram-Befehle prüfen
+# 3. Poll incoming bot updates / commands
 updates = get_updates()
 print(updates)
 ```
 
-#### Aufruf direkt über die Kommandozeile:
+#### CLI Usage:
 ```cmd
-:: Textnachricht senden:
-python telegram_helper.py --text "Testnachricht aus Windows Terminal"
+:: Send text message:
+python telegram_helper.py --text "Test message from Windows Terminal"
 
-:: Datei mit Beschreibung senden:
+:: Send file with a description:
 python telegram_helper.py --file sw2_controller.py --caption "Controller Version 1.0"
 
-:: Neueste Bot-Nachrichten anzeigen:
+:: View latest incoming bot updates:
 python telegram_helper.py --updates
 ```
