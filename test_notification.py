@@ -160,12 +160,16 @@ def pack_resource_notification(msg_id: int, cid: int, extension_cid: int, title_
                                msg_cid: int, disp_name_cid: int, status_icon_cid: int,
                                rich_icon_cid: int, rich_image_cid: int,
                                overview_screen_cid: int, detail_screen_cid: int) -> bytes:
+    drawer_disp = disp_name_cid if disp_name_cid != -1 else title_cid
     fields = [
         (0, title_cid),
         (1, disp_name_cid),
         (2, msg_cid),
         (3, status_icon_cid),
         (4, rich_icon_cid),
+        (7, status_icon_cid),
+        (8, status_icon_cid),
+        (13, drawer_disp),
         (14, rich_image_cid),
         (17, 0) # bitmapRendering = 0
     ]
@@ -329,8 +333,8 @@ async def main():
     await send_pkt("NOTIF_DISP_NAME", pack_resource_string(msg_id, CID_NOTIFICATION_DISPLAY_NAME, "Rubi SW2", 220, 28))
     await send_pkt("NOTIF_MESSAGE", pack_resource_string(msg_id, CID_NOTIFICATION_MESSAGE, "Hallo von Windows 11!", 220, 120))
     
-    # Overview Subscreen (Card Preview + Title) & Detail Subscreen (Message + Title)
-    await send_pkt("NOTIF_OVERVIEW_SCREEN", pack_resource_screen(msg_id, overview_screen_cid, [CID_NOTIFICATION_IMAGE, CID_NOTIFICATION_TITLE]))
+    # Overview Subscreen & Detail Subscreen (Clean Text Screens with Message + Title)
+    await send_pkt("NOTIF_OVERVIEW_SCREEN", pack_resource_screen(msg_id, overview_screen_cid, [CID_NOTIFICATION_MESSAGE, CID_NOTIFICATION_TITLE]))
     await send_pkt("NOTIF_DETAIL_SCREEN", pack_resource_screen(msg_id, detail_screen_cid, [CID_NOTIFICATION_MESSAGE, CID_NOTIFICATION_TITLE]))
     
     icon20 = render_teal_icon(20, 20)

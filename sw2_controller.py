@@ -492,6 +492,13 @@ class CostanzaCodec:
             fields.append((NOTIFICATION_KEY_STATUS_BAR_ICON, status_icon_cid))
         if rich_icon_cid != -1:
             fields.append((NOTIFICATION_KEY_RICH_ICON, rich_icon_cid))
+        if status_icon_cid != -1:
+            fields.append((NOTIFICATION_KEY_WIDGET_COLOR_ICON, status_icon_cid))
+            fields.append((NOTIFICATION_KEY_WIDGET_GRAYSCALE_ICON, status_icon_cid))
+        if disp_name_cid != -1:
+            fields.append((NOTIFICATION_KEY_DISPLAY_NAME_DRAWER, disp_name_cid))
+        elif title_cid != -1:
+            fields.append((NOTIFICATION_KEY_DISPLAY_NAME_DRAWER, title_cid))
         if rich_image_cid != -1:
             fields.append((NOTIFICATION_KEY_MESSAGE_WHITE_IMAGE, rich_image_cid))
         fields.append((NOTIFICATION_KEY_BITMAP_RENDERING, bitmap_rendering))
@@ -945,8 +952,8 @@ class SmartWatch2Controller:
         self.send_message(CostanzaCodec.pack_resource_string(self.next_msg_id(), disp_cid, "SmartWatch 2", width=220, height=28, color=-1))
         # 3. Message Body String
         self.send_message(CostanzaCodec.pack_resource_string(self.next_msg_id(), msg_cid, message, width=220, height=120, color=-1))
-        # 4. ResourceScreens: Subscreen 1 (Overview / Card Preview) & Subscreen 2 (Detail View)
-        self.send_message(CostanzaCodec.pack_resource_screen(self.next_msg_id(), overview_screen_cid, [img_cid, title_cid]))
+        # 4. ResourceScreens: Subscreen 1 (Overview Text Screen) & Subscreen 2 (Detail View)
+        self.send_message(CostanzaCodec.pack_resource_screen(self.next_msg_id(), overview_screen_cid, [msg_cid, title_cid]))
         self.send_message(CostanzaCodec.pack_resource_screen(self.next_msg_id(), detail_screen_cid, [msg_cid, title_cid]))
         
         # 5. Icons: 20x20 Status bar & 40x40 Rich icon
