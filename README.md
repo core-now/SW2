@@ -39,6 +39,27 @@ Unfortunately, Sony abandoned the software ecosystem years ago:
 
 ---
 
+## 🚧 Current Status, Known Issues & Roadmap (To-Fix)
+
+### 🟢 Working (Current State)
+- ✅ **Full Bluetooth RFCOMM/SPP Connectivity**: Rock-solid connection lifecycle and protocol handshake on Android 14+.
+- ✅ **Standalone Companion App**: Zero reliance on ancient Sony Smart Connect or LiveWare Manager.
+- ✅ **Real-Time Notification Pop-ups**: Instant wake-screen notification alerts with custom vibration haptics.
+- ✅ **Automatic Time & Locale Sync**: Synchronizes the watch's internal RTC, 12/24-hour display format, timezone, and language.
+- ✅ **Python Protocol Lab**: Native Windows 11 WinRT RFCOMM server (`sw2_controller.py`) for rapid reverse engineering and protocol verification.
+
+### 🟡 Active Focus & Known Issues (To-Fix)
+- 🔄 **On-Watch Notification History ("List empty")**: While incoming notification pop-ups render immediately with vibration and text, tapping the notification or opening the app drawer currently falls back to *"List empty"*. We are actively reverse-engineering the persistent event drawer / menu container hierarchy and dual-subscreen layout in Sony's `GeneralSyncManager`.
+- 🔄 **Dynamic Multi-App Icons & Notification Filtering**: Support for dynamic app icons and granular notification filtering.
+
+### 📋 Roadmap (Upcoming)
+- 📋 **Interactive Notification Actions**: Dismiss notifications or trigger "Open on Phone" directly from the watch.
+- 📋 **Media & Music Playback Controls**: Control media playback (Play/Pause, Next, Previous, Volume) from the wrist.
+- 📋 **Incoming Call Alerts & Caller ID**: Real-time caller identification and call reject/mute actions.
+- 📋 **Automated GitHub Actions Releases**: CI/CD pipeline building and releasing signed companion APKs.
+
+---
+
 ## 📲 Getting Started (Android Companion App)
 
 ### 1. Prepare your SmartWatch 2
